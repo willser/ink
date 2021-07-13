@@ -1,3 +1,76 @@
+# Version 3.0-rc4 (2021-07-12)
+
+This is the 4th release candidate for ink! 3.0.
+
+The list below shows the additions, changes and fixes that are visible to users of ink!.
+
+## Compatibility
+
+ink! 3.0-rc4 is compatible with
+
+- The `cargo-contract` CLI tool version `0.13.0` or newer.
+    - Install newest version using `cargo install --force cargo-contract`.
+- Substrate version `4.0.0-dev` including the `contracts-pallet` version `4.0.0-dev`.
+
+The documentation on our [Documentation Portal](https://paritytech.github.io/ink-docs)
+is up to date with this release candidate. Since the last release candidate we added
+a number of [Frequently Asked Questions](https://paritytech.github.io/ink-docs/faq) there.
+
+It's notable that we implemented a lot of improvements to our testing environment
+since the last release candidate. To highlight some key improvements:
+
+- We've put an emphasis on building entire contracts in our documentation tests.
+  If there is a usage example of some ink! function in our documentation, it is tested
+  in the context of a complete ink! contract now.
+  In the past this was not always the case, sometimes usage examples were just isolated
+  code snippets.
+- We've started our [`ink-waterfall`](https://github.com/paritytech/ink-waterfall) project
+  and included it into our Continuous Integration setup. It runs End-to-End tests through
+  our whole stack for all our examples.
+  This means all the examples in our repository are built using the latest `cargo-contract`
+  and subsequently deployed on the latest `canvas-node` by emulating browser interactions
+  with both the `canvas-ui` and the `polkadot-js` UI.
+- We've introduced automated grammar and spell checking into our Continuous Integration environment.
+
+We hope that this will be a further step to ensure a continuously high quality of our codebase.
+
+## Added
+- Added support for the new `seal_random` API ‒ [#734](https://github.com/paritytech/ink/pull/734).
+- Added missing documentation for the `ink_storage_derive` procedural macros ‒ [#711](https://github.com/paritytech/ink/pull/711).
+- Implemented the (unstable) `seal_rent_params` API ‒ [#755](https://github.com/paritytech/ink/pull/755).
+- Implemented the (unstable) `seal_rent_status` API ‒ [#798](https://github.com/paritytech/ink/pull/798).
+- Implemented the (unstable) `seal_debug_message` API ‒ [#792](https://github.com/paritytech/ink/pull/792).
+    - The examples have been updated to reflect the new way of printing debug messages via `ink_env::debug_println!(…)`.
+- Added usage comments with code examples to the `ink_env` API ‒ [#797](https://github.com/paritytech/ink/pull/797).
+    - The [published crate documentation](https://paritytech.github.io/ink/ink_lang/struct.EnvAccess.html) now contains
+      much more code examples for the methods behind `self.env()` and `Self::env()`.
+- Added an example implementation for ERC-1155, a multi-token standard ‒ [#800](https://github.com/paritytech/ink/pull/800).
+- Implemented binary search for `collections::Vec` ‒ [#836](https://github.com/paritytech/ink/pull/836).
+- Added the ability for submitting payable transactions to the `multisig` example ‒ [#820](https://github.com/paritytech/ink/pull/820).
+- Implemented `Decode` for `Error` types in the examples, enabling building them as dependencies ‒ [#761](https://github.com/paritytech/ink/pull/761).
+- MVP for new off-chain environment testing engine: https://github.com/paritytech/ink/pull/712
+
+## Changed
+- A couple of readme's have been reworked:
+    - Our main ink! readme ‒ [#774](https://github.com/paritytech/ink/pull/774).
+    - The `rand-extension` example readme ‒ [#793](https://github.com/paritytech/ink/pull/793).
+    - The `delegator` example readme ‒ [#766](https://github.com/paritytech/ink/pull/766).
+- With the stabilization of Rust 1.51 we ware able to remove the `ink-unstable` feature, making
+  `collections::SmallVec` and `lazy::LazyArray` available by default ‒ [#746](https://github.com/paritytech/ink/pull/746).
+- Resolve confusion of #[test] vs. #[ink::test] #714 Use b#[ink::test] instead of #[test]
+- With the stabilization of Rust's `min_const_generics` we were able to replace the fixed
+  size implementations of `SpreadLayout` and `PackedLayout` for Arrays. These traits are
+  now implemented for all Arrays of size `usize` ‒ [#754](https://github.com/paritytech/ink/pull/754).
+- We were able to remove the pinned `funty` dependency ‒ [#711](https://github.com/paritytech/ink/pull/711).
+- The `contract-transfer` example has been improved for better UI support ‒ [#789](https://github.com/paritytech/ink/pull/789).
+- The `contract-transfer` example has been improved for better error handling ‒ [#790](https://github.com/paritytech/ink/pull/790).
+
+## Fixed
+- Catch illegal `struct` destructuring pattern in ink! message arguments ‒ [#846](https://github.com/paritytech/ink/pull/846).
+- Do not generate metadata if compiled as dependency ‒ [#811](https://github.com/paritytech/ink/pull/811).
+- Fix execution context parameters in DNS example tests ‒ [#723](https://github.com/paritytech/ink/pull/723).
+- Fixed the `Greeter` contract example from our doc comments ‒ [#773](https://github.com/paritytech/ink/pull/773).
+
 # Version 3.0-rc3 (2021-03-02)
 
 This is the 3rd release candidate for ink! 3.0.
