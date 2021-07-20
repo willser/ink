@@ -534,7 +534,7 @@ mod tests {
             // Initialize a LazyCell with None and push it to `k`
             let k = Key::from([0x00; 32]);
             let val: MaybeValue = None;
-            SpreadLayout::push_spread(&Lazy::new(val), &mut KeyPtr::from(k));
+            SpreadLayout::push_spread(&Lazy::from_value(val), &mut KeyPtr::from(k));
 
             // Pull another instance `v` from `k`, check that it is `None`
             let mut v =
@@ -715,7 +715,7 @@ mod tests {
         ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
             // given
             let root_key = Key::from([0x42; 32]);
-            let nested_lazy: Lazy<Lazy<u32>> = Lazy::new(Lazy::new(13u32));
+            let nested_lazy: Lazy<Lazy<u32>> = Lazy::from_value(Lazy::from_value(13u32));
             SpreadLayout::push_spread(&nested_lazy, &mut KeyPtr::from(root_key));
             let pulled_lazy = <Lazy<Lazy<u32>> as SpreadLayout>::pull_spread(
                 &mut KeyPtr::from(root_key),
@@ -752,7 +752,7 @@ mod tests {
 
             // when
             let setup_result = std::panic::catch_unwind(|| {
-                let lazy: Lazy<u32> = Lazy::new(13u32);
+                let lazy: Lazy<u32> = Lazy::from_value(13u32);
                 SpreadLayout::push_spread(&lazy, &mut KeyPtr::from(root_key));
                 let _pulled_lazy =
                     <Lazy<u32> as SpreadLayout>::pull_spread(&mut KeyPtr::from(root_key));
@@ -787,7 +787,7 @@ mod tests {
 
             // when
             let setup_result = std::panic::catch_unwind(|| {
-                let lazy: Lazy<[u32; 5]> = Lazy::new([13, 14, 15, 16, 17]);
+                let lazy: Lazy<[u32; 5]> = Lazy::from_value([13, 14, 15, 16, 17]);
                 SpreadLayout::push_spread(&lazy, &mut KeyPtr::from(root_key));
                 let _pulled_lazy = <Lazy<[u32; 5]> as SpreadLayout>::pull_spread(
                     &mut KeyPtr::from(root_key),
@@ -820,7 +820,7 @@ mod tests {
         ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
             // given
             let root_key = Key::from([0x42; 32]);
-            let nested_lazy: Lazy<Lazy<u32>> = Lazy::new(Lazy::new(13u32));
+            let nested_lazy: Lazy<Lazy<u32>> = Lazy::from_value(Lazy::from_value(13u32));
             SpreadLayout::push_spread(&nested_lazy, &mut KeyPtr::from(root_key));
             let pulled_lazy = <Lazy<Lazy<u32>> as SpreadLayout>::pull_spread(
                 &mut KeyPtr::from(root_key),
@@ -854,7 +854,7 @@ mod tests {
 
             // when
             let setup_result = std::panic::catch_unwind(|| {
-                let lazy: Lazy<u32> = Lazy::new(13u32);
+                let lazy: Lazy<u32> = Lazy::from_value(13u32);
                 SpreadLayout::push_spread(&lazy, &mut KeyPtr::from(root_key));
                 let _pulled_lazy =
                     <Lazy<u32> as SpreadLayout>::pull_spread(&mut KeyPtr::from(root_key));
@@ -886,7 +886,7 @@ mod tests {
 
             // when
             let setup_result = std::panic::catch_unwind(|| {
-                let lazy: Lazy<[u32; 5]> = Lazy::new([13, 14, 15, 16, 17]);
+                let lazy: Lazy<[u32; 5]> = Lazy::from_value([13, 14, 15, 16, 17]);
                 SpreadLayout::push_spread(&lazy, &mut KeyPtr::from(root_key));
                 let _pulled_lazy = <Lazy<[u32; 5]> as SpreadLayout>::pull_spread(
                     &mut KeyPtr::from(root_key),

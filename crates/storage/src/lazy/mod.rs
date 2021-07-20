@@ -108,19 +108,19 @@ impl<T> Lazy<T>
 where
     T: SpreadLayout,
 {
-    /// Creates an eagerly populated lazy storage value.
+    /// Creates a true lazy storage value for the given key.
     #[must_use]
-    pub fn new(value: T) -> Self {
+    pub(crate) fn new(key: Key) -> Self {
         Self {
-            cell: LazyCell::new(Some(value)),
+            cell: LazyCell::lazy(key),
         }
     }
 
-    /// Creates a true lazy storage value for the given key.
+    /// Creates an eagerly populated lazy storage value.
     #[must_use]
-    pub(crate) fn lazy(key: Key) -> Self {
+    pub fn from_value(value: T) -> Self {
         Self {
-            cell: LazyCell::lazy(key),
+            cell: LazyCell::new(Some(value)),
         }
     }
 }
@@ -180,7 +180,7 @@ where
     T: SpreadLayout,
 {
     fn from(value: T) -> Self {
-        Self::new(value)
+        Self::from_value(value)
     }
 }
 
@@ -189,7 +189,7 @@ where
     T: Default + SpreadLayout,
 {
     fn default() -> Self {
-        Self::new(Default::default())
+        Self::from_value(Default::default())
     }
 }
 

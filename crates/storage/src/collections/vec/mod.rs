@@ -84,7 +84,7 @@ where
     /// Creates a new empty storage vector.
     pub fn new() -> Self {
         Self {
-            len: Lazy::new(0),
+            len: Lazy::from_value(0),
             elems: LazyIndexMap::new(),
         }
     }

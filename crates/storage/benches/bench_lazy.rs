@@ -37,13 +37,13 @@ mod populated_cache {
     use core::ops::DerefMut;
 
     pub fn set() {
-        let mut lazy = <Lazy<i32>>::new(1);
+        let mut lazy = <Lazy<i32>>::from_value(1);
         let lazy_mut = black_box(&mut lazy);
         black_box(Lazy::set(lazy_mut, 17));
     }
 
     pub fn deref_mut() {
-        let mut lazy = <Lazy<i32>>::new(1);
+        let mut lazy = <Lazy<i32>>::from_value(1);
         let i32_mut = black_box(lazy.deref_mut());
         black_box(*i32_mut = 17);
     }
@@ -63,7 +63,7 @@ fn bench_set_populated_cache(c: &mut Criterion) {
 /// Pushes a value to contract storage and creates a `Lazy` pointing to it.
 fn push_storage_lazy(value: i32) -> Lazy<i32> {
     let root_key = Key::from([0x00; 32]);
-    SpreadLayout::push_spread(&Lazy::new(value), &mut KeyPtr::from(root_key));
+    SpreadLayout::push_spread(&Lazy::from_value(value), &mut KeyPtr::from(root_key));
     SpreadLayout::pull_spread(&mut KeyPtr::from(root_key))
 }
 

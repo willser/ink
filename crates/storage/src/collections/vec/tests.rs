@@ -511,7 +511,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let mut lazy_vec: Lazy<StorageVec<u32>> = Lazy::new(StorageVec::new());
+        let mut lazy_vec: Lazy<StorageVec<u32>> = Lazy::from_value(StorageVec::new());
         lazy_vec.push(13u32);
         lazy_vec.push(13u32);
         SpreadLayout::push_spread(&lazy_vec, &mut KeyPtr::from(root_key));
@@ -582,7 +582,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let mut lazy_vec: Lazy<StorageVec<u32>> = Lazy::new(StorageVec::new());
+        let mut lazy_vec: Lazy<StorageVec<u32>> = Lazy::from_value(StorageVec::new());
         lazy_vec.push(13u32);
         lazy_vec.push(13u32);
         SpreadLayout::push_spread(&lazy_vec, &mut KeyPtr::from(root_key));

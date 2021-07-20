@@ -329,7 +329,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_hmap = Lazy::new(filled_hmap());
+        let lazy_hmap = Lazy::from_value(filled_hmap());
         SpreadLayout::push_spread(&lazy_hmap, &mut KeyPtr::from(root_key));
         let pulled_hmap = <Lazy<StorageHashMap<u8, i32>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),
@@ -396,7 +396,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_hmap = Lazy::new(filled_hmap());
+        let lazy_hmap = Lazy::from_value(filled_hmap());
         SpreadLayout::push_spread(&lazy_hmap, &mut KeyPtr::from(root_key));
         let pulled_hmap = <Lazy<StorageHashMap<u8, i32>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),

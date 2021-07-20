@@ -403,7 +403,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_vec = Lazy::new(vec_from_slice(&[b'a', b'b', b'c', b'd']));
+        let lazy_vec = Lazy::from_value(vec_from_slice(&[b'a', b'b', b'c', b'd']));
         SpreadLayout::push_spread(&lazy_vec, &mut KeyPtr::from(root_key));
         let pulled_vec = <Lazy<SmallVec<u8, 4>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),
@@ -469,7 +469,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_vec = Lazy::new(vec_from_slice(&[b'a', b'b', b'c', b'd']));
+        let lazy_vec = Lazy::from_value(vec_from_slice(&[b'a', b'b', b'c', b'd']));
         SpreadLayout::push_spread(&lazy_vec, &mut KeyPtr::from(root_key));
         let pulled_vec = <Lazy<SmallVec<u8, 4>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),

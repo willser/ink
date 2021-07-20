@@ -759,7 +759,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_stash = Lazy::new(create_holey_stash());
+        let lazy_stash = Lazy::from_value(create_holey_stash());
         SpreadLayout::push_spread(&lazy_stash, &mut KeyPtr::from(root_key));
         let pulled_stash = <Lazy<StorageStash<u8>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),
@@ -825,7 +825,7 @@ fn storage_is_cleared_completely_after_pull_lazy() {
     ink_env::test::run_test::<ink_env::DefaultEnvironment, _>(|_| {
         // given
         let root_key = Key::from([0x42; 32]);
-        let lazy_stash = Lazy::new(create_holey_stash());
+        let lazy_stash = Lazy::from_value(create_holey_stash());
         SpreadLayout::push_spread(&lazy_stash, &mut KeyPtr::from(root_key));
         let pulled_stash = <Lazy<StorageStash<u8>> as SpreadLayout>::pull_spread(
             &mut KeyPtr::from(root_key),

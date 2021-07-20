@@ -106,7 +106,7 @@ where
     /// Creates a new empty vector.
     pub fn new() -> Self {
         Self {
-            len: Lazy::new(0),
+            len: Lazy::from_value(0),
             elems: Default::default(),
         }
     }

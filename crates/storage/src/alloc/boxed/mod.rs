@@ -64,7 +64,7 @@ where
     pub fn new(value: T) -> Self {
         Self {
             allocation: alloc(),
-            value: Lazy::new(value),
+            value: Lazy::from_value(value),
         }
     }
 
@@ -72,7 +72,7 @@ where
     fn lazy(allocation: DynamicAllocation) -> Self {
         Self {
             allocation,
-            value: Lazy::lazy(allocation.key()),
+            value: Lazy::new(allocation.key()),
         }
     }
 

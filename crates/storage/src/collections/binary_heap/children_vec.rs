@@ -93,7 +93,7 @@ where
     #[inline]
     pub fn new() -> Self {
         Self {
-            len: Lazy::new(0),
+            len: Lazy::from_value(0),
             children: StorageVec::new(),
         }
     }
@@ -206,7 +206,7 @@ where
             return
         }
         self.children.clear();
-        self.len = Lazy::new(0);
+        self.len = Lazy::from_value(0);
     }
 
     /// Appends an element to the back of the heap.
