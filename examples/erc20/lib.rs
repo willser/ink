@@ -1,7 +1,10 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
+use ink_env::{
+    DefaultEnvironment,
+    Environment,
+};
 use ink_lang as ink;
-use ink_env::{Environment, DefaultEnvironment};
 
 pub struct EnvironmentLight;
 
