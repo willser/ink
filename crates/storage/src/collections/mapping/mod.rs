@@ -28,20 +28,89 @@ use crate::traits::{
     SpreadAllocate,
     SpreadLayout,
 };
-use core::marker::PhantomData;
-use ink_env::hash::{
-    Blake2x256,
-    HashOutput,
+use core::{
+    cell::RefCell,
+    marker::PhantomData,
 };
+use ink_env::hash::Blake2x256;
 use ink_primitives::Key;
 
 /// A mapping of key-value pairs directly into contract storage.
-#[cfg_attr(feature = "std", derive(scale_info::TypeInfo))]
 #[derive(Default)]
 pub struct Mapping<K, V> {
     offset_key: Key,
+    index_key: RefCell<Key>,
     _marker: PhantomData<fn() -> (K, V)>,
 }
+
+#[cfg(feature = "std")]
+const _: () = {
+    use crate::traits::{
+        LayoutCryptoHasher,
+        StorageLayout,
+    };
+    use ink_env::hash::HashOutput;
+    use ink_metadata::layout::{
+        CellLayout,
+        HashLayout,
+        HashingStrategy,
+        Layout,
+        LayoutKey,
+    };
+    use scale_info::TypeInfo;
+
+    impl<K, V> StorageLayout for Mapping<K, V>
+    where
+        K: Ord + scale::Encode,
+        V: TypeInfo + 'static,
+        Key: From<<Blake2x256 as HashOutput>::Type>,
+    {
+        fn layout(key_ptr: &mut KeyPtr) -> Layout {
+            Layout::Hash(HashLayout::new(
+                LayoutKey::from(key_ptr.advance_by(1)),
+                HashingStrategy::new(
+                    Blake2x256::crypto_hasher(),
+                    b"mapping".to_vec(),
+                    Vec::new(),
+                ),
+                Layout::Cell(CellLayout::new::<V>(LayoutKey::from(
+                    key_ptr.advance_by(0),
+                ))),
+            ))
+        }
+    }
+
+    impl<K, V> scale_info::TypeInfo for Mapping<K, V>
+    where
+        K: scale::Encode + TypeInfo + 'static + Ord,
+        V: scale::Encode + TypeInfo + 'static,
+        Key: From<<Blake2x256 as HashOutput>::Type>,
+    {
+        type Identity = Self;
+
+        fn type_info() -> scale_info::Type {
+            scale_info::Type::builder()
+                .path(
+                    scale_info::Path::from_segments(["ink_storage", "lazy", "Mapping"])
+                        .expect("encountered invalid Rust path"),
+                )
+                .type_params([
+                    scale_info::TypeParameter::new(
+                        "K",
+                        Some(scale_info::MetaType::new::<K>()),
+                    ),
+                    scale_info::TypeParameter::new(
+                        "V",
+                        Some(scale_info::MetaType::new::<V>()),
+                    ),
+                ])
+                .composite(
+                    scale_info::build::Fields::named()
+                        .field(|f| f.name("offset_key").ty::<Key>().type_name("Key")),
+                )
+        }
+    }
+};
 
 impl<K, V> core::fmt::Debug for Mapping<K, V> {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -56,6 +125,7 @@ impl<K, V> Mapping<K, V> {
     fn new(offset_key: Key) -> Self {
         Self {
             offset_key,
+            index_key: Default::default(),
             _marker: Default::default(),
         }
     }
@@ -73,7 +143,10 @@ where
         Q: scale::EncodeLike<K>,
         R: scale::EncodeLike<V> + PackedLayout,
     {
-        push_packed_root(value, &self.storage_key(key));
+        // push_packed_root(value, &self.storage_key(key));
+        self.index_into_storage_at(key, |at| {
+            push_packed_root(value, at);
+        })
     }
 
     /// Get the `value` at `key` from the contract storage.
@@ -84,21 +157,19 @@ where
     where
         Q: scale::EncodeLike<K>,
     {
-        pull_packed_root_opt(&self.storage_key(key))
+        self.index_into_storage_at(key, pull_packed_root_opt)
     }
 
-    /// Returns a `Key` pointer used internally by the storage API.
-    ///
-    /// This key is a combination of the `Mapping`'s internal `offset_key`
-    /// and the user provided `key`.
-    fn storage_key<Q>(&self, key: Q) -> Key
+    #[inline]
+    fn index_into_storage_at<Q, F, R>(&self, key: Q, f: F) -> R
     where
         Q: scale::EncodeLike<K>,
+        F: FnOnce(&Key) -> R,
     {
         let encodedable_key = (&self.offset_key, key);
-        let mut output = <Blake2x256 as HashOutput>::Type::default();
-        ink_env::hash_encoded::<Blake2x256, _>(&encodedable_key, &mut output);
-        output.into()
+        let mut index_key = self.index_key.borrow_mut();
+        ink_env::hash_encoded::<Blake2x256, _>(&encodedable_key, index_key.as_mut());
+        f(&index_key)
     }
 }
 
@@ -136,28 +207,6 @@ impl<K, V> SpreadAllocate for Mapping<K, V> {
         Self::new(*ExtKeyPtr::next_for::<Self>(ptr))
     }
 }
-
-#[cfg(feature = "std")]
-const _: () = {
-    use crate::traits::StorageLayout;
-    use ink_metadata::layout::{
-        CellLayout,
-        Layout,
-        LayoutKey,
-    };
-
-    impl<K, V> StorageLayout for Mapping<K, V>
-    where
-        K: scale_info::TypeInfo + 'static,
-        V: scale_info::TypeInfo + 'static,
-    {
-        fn layout(key_ptr: &mut KeyPtr) -> Layout {
-            Layout::Cell(CellLayout::new::<Self>(LayoutKey::from(
-                key_ptr.advance_by(1),
-            )))
-        }
-    }
-};
 
 #[cfg(test)]
 mod tests {
