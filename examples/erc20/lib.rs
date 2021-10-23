@@ -1,8 +1,22 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 use ink_lang as ink;
+use ink_env::{Environment, DefaultEnvironment};
 
-#[ink::contract]
+pub struct EnvironmentLight;
+
+impl Environment for EnvironmentLight {
+    const MAX_EVENT_TOPICS: usize = <DefaultEnvironment as Environment>::MAX_EVENT_TOPICS;
+    type AccountId = [u8; 4];
+    type Balance = <DefaultEnvironment as Environment>::Balance;
+    type Hash = <DefaultEnvironment as Environment>::Hash;
+    type Timestamp = <DefaultEnvironment as Environment>::Timestamp;
+    type BlockNumber = <DefaultEnvironment as Environment>::BlockNumber;
+    type ChainExtension = <DefaultEnvironment as Environment>::ChainExtension;
+    type RentFraction = <DefaultEnvironment as Environment>::RentFraction;
+}
+
+#[ink::contract(env = super::EnvironmentLight)]
 mod erc20 {
     use ink_primitives::{
         Key,
@@ -86,11 +100,11 @@ mod erc20 {
             let caller = Self::env().caller();
             self.balances.insert(&caller, &initial_supply);
             *self.total_supply = initial_supply;
-            Self::env().emit_event(Transfer {
-                from: None,
-                to: Some(caller),
-                value: initial_supply,
-            });
+            // Self::env().emit_event(Transfer {
+            //     from: None,
+            //     to: Some(caller),
+            //     value: initial_supply,
+            // });
         }
 
         /// Returns the total token supply.
@@ -165,11 +179,11 @@ mod erc20 {
         pub fn approve(&mut self, spender: AccountId, value: Balance) -> Result<()> {
             let owner = self.env().caller();
             self.allowances.insert((&owner, &spender), &value);
-            self.env().emit_event(Approval {
-                owner,
-                spender,
-                value,
-            });
+            // self.env().emit_event(Approval {
+            //     owner,
+            //     spender,
+            //     value,
+            // });
             Ok(())
         }
 
@@ -226,11 +240,11 @@ mod erc20 {
             self.balances.insert(from, &(from_balance - value));
             let to_balance = self.balance_of_impl(to);
             self.balances.insert(to, &(to_balance + value));
-            self.env().emit_event(Transfer {
-                from: Some(*from),
-                to: Some(*to),
-                value,
-            });
+            // self.env().emit_event(Transfer {
+            //     from: Some(*from),
+            //     to: Some(*to),
+            //     value,
+            // });
             Ok(())
         }
     }
