@@ -238,13 +238,13 @@ where
 }
 
 /// Emits an event with the given event data.
-pub fn emit_event<T, Event>(event: Event)
+pub fn emit_event<'a, T, Event>(event: &'a Event)
 where
     T: Environment,
-    Event: Topics + scale::Encode,
+    &'a Event: Topics + scale::Encode,
 {
     <EnvInstance as OnInstance>::on_instance(|instance| {
-        TypedEnvBackend::emit_event::<T, Event>(instance, event)
+        TypedEnvBackend::emit_event::<'a, T, Event>(instance, event)
     })
 }
 

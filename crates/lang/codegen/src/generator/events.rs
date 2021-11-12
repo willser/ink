@@ -120,7 +120,7 @@ impl<'a> Events<'a> {
                     const AMOUNT: usize = 0;
                 }
 
-                impl<'a> ::ink_env::Topics for #base_event_ident<'a> {
+                impl<'a> ::ink_env::Topics for &'a #base_event_ident<'a> {
                     type RemainingTopics = __ink_UndefinedAmountOfTopics;
 
                     fn topics<E, B>(
@@ -131,13 +131,14 @@ impl<'a> Events<'a> {
                         E: ::ink_env::Environment,
                         B: ::ink_env::topics::TopicsBuilderBackend<E>,
                     {
-                        match self {
-                            #(
-                                Self::#event_idents(event) => {
-                                    <#event_idents as ::ink_env::Topics>::topics::<E, B>(event, builder)
-                                }
-                            )*
-                        }
+                        todo!()
+                        // match self {
+                        //     #(
+                        //         Self::#event_idents(event) => {
+                        //             <#event_idents as ::ink_env::Topics>::topics::<E, B>(event, builder)
+                        //         }
+                        //     )*
+                        // }
                     }
                 }
             };
@@ -155,13 +156,13 @@ impl<'a> Events<'a> {
                 as ::ink_env::Environment>::MAX_EVENT_TOPICS
         );
         quote_spanned!(span=>
-            impl<'a> ::ink_lang::codegen::EventLenTopics for #event_ident<'a> {
+            impl ::ink_lang::codegen::EventLenTopics for &'static #event_ident<'static> {
                 type LenTopics = ::ink_lang::codegen::EventTopics<#len_topics>;
             }
 
             const _: () = ::ink_lang::codegen::utils::consume_type::<
                 ::ink_lang::codegen::EventRespectsTopicLimit<
-                    #event_ident,
+                    &'static #event_ident<'static>,
                     { #max_len_topics },
                 >
             >();
@@ -228,7 +229,7 @@ impl<'a> Events<'a> {
             };
             quote_spanned!(span =>
                 const _: () = {
-                    impl<'a> ::ink_env::Topics for #event_ident<'a> {
+                    impl<'a> ::ink_env::Topics for &'a #event_ident<'a> {
                         type RemainingTopics = #remaining_topics_ty;
 
                         fn topics<E, B>(

@@ -467,12 +467,13 @@ impl TypedEnvBackend for EnvInstance {
             })
     }
 
-    fn emit_event<T, Event>(&mut self, new_event: Event)
+    fn emit_event<'a, T, Event>(&mut self, new_event: &'a Event)
     where
         T: Environment,
-        Event: Topics + scale::Encode,
+        &'a Event: Topics + scale::Encode,
     {
-        self.emitted_events.record::<T, Event>(new_event)
+        todo!("possibly need to encode this to record")
+        // self.emitted_events.record::<T, Event>(new_event)
     }
 
     fn set_rent_allowance<T>(&mut self, new_rent_allowance: T::Balance)

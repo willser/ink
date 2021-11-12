@@ -392,10 +392,10 @@ impl TypedEnvBackend for EnvInstance {
         self.get_property_little_endian::<T::Balance>(ext::tombstone_deposit)
     }
 
-    fn emit_event<T, Event>(&mut self, event: Event)
+    fn emit_event<'a, T, Event>(&mut self, event: &'a Event)
     where
         T: Environment,
-        Event: Topics + scale::Encode,
+        &'a Event: Topics + scale::Encode,
     {
         let (mut scope, enc_topics) =
             event.topics::<T, _>(TopicsBuilder::from(self.scoped_buffer()).into());
