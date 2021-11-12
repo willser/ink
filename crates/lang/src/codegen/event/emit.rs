@@ -15,12 +15,12 @@
 use crate::reflect::ContractEventBase;
 
 /// Allows for `self.env().emit_event(..)` syntax in ink! implementation blocks.
-pub trait EmitEvent<C>
+pub trait EmitEvent<'a, C>
 where
-    C: ContractEventBase,
+    C: ContractEventBase<'a>,
 {
     /// Emits an event that can be trivially converted into the base event.
-    fn emit_event<E>(self, event: &E)
+    fn emit_event<E>(self, event: &'a E)
     where
-        E: Into<<C as ContractEventBase>::Type>;
+        &'a E: Into<<C as ContractEventBase<'a>>::Type>;
 }
