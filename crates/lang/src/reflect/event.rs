@@ -46,7 +46,7 @@
 ///
 /// type BaseEvent = <Contract as ContractEventBase>::Type;
 /// ```
-pub trait ContractEventBase {
+pub trait ContractEventBase<'a> {
     /// The generated base event enum.
     type Type;
 }

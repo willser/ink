@@ -60,14 +60,15 @@ impl<'a> Events<'a> {
         quote! {
             const _: () = {
                 impl<'a> ::ink_lang::codegen::EmitEvent<#storage_ident> for ::ink_lang::EnvAccess<'a, Environment> {
-                    fn emit_event<E>(self, event: E)
+                    fn emit_event<E>(self, event: &E)
                     where
                         E: Into<<#storage_ident as ::ink_lang::reflect::ContractEventBase>::Type>,
                     {
+                        let base_event = event.into();
                         ::ink_env::emit_event::<
                             Environment,
                             <#storage_ident as ::ink_lang::reflect::ContractEventBase>::Type
-                        >(event.into());
+                        >(&base_event);
                     }
                 }
             };
@@ -83,26 +84,30 @@ impl<'a> Events<'a> {
             .contract
             .module()
             .events()
-            .map(|event| event.ident())
+            .map(|event| {
+                let ident = event.ident();
+                ident
+                // quote! ( &'a #ident<'a> )
+            })
             .collect::<Vec<_>>();
         let base_event_ident =
             proc_macro2::Ident::new("__ink_EventBase", Span::call_site());
         quote! {
-            #[derive(::scale::Encode, ::scale::Decode)]
-            pub enum #base_event_ident {
-                #( #event_idents(#event_idents), )*
+            #[derive(::scale::Encode)]
+            pub enum #base_event_ident<'a> {
+                #( #event_idents(&'a #event_idents<'a>), )*
             }
 
             const _: () = {
-                impl ::ink_lang::reflect::ContractEventBase for #storage_ident {
-                    type Type = #base_event_ident;
+                impl<'a> ::ink_lang::reflect::ContractEventBase<'a> for #storage_ident {
+                    type Type = #base_event_ident<'a>;
                 }
             };
 
             #(
                 const _: () = {
-                    impl From<#event_idents> for #base_event_ident {
-                        fn from(event: #event_idents) -> Self {
+                    impl<'a> From<&'a #event_idents<'a>> for #base_event_ident<'a> {
+                        fn from(event: &'a #event_idents<'a>) -> Self {
                             Self::#event_idents(event)
                         }
                     }
@@ -115,7 +120,7 @@ impl<'a> Events<'a> {
                     const AMOUNT: usize = 0;
                 }
 
-                impl ::ink_env::Topics for #base_event_ident {
+                impl<'a> ::ink_env::Topics for #base_event_ident<'a> {
                     type RemainingTopics = __ink_UndefinedAmountOfTopics;
 
                     fn topics<E, B>(
@@ -150,7 +155,7 @@ impl<'a> Events<'a> {
                 as ::ink_env::Environment>::MAX_EVENT_TOPICS
         );
         quote_spanned!(span=>
-            impl ::ink_lang::codegen::EventLenTopics for #event_ident {
+            impl<'a> ::ink_lang::codegen::EventLenTopics for #event_ident<'a> {
                 type LenTopics = ::ink_lang::codegen::EventTopics<#len_topics>;
             }
 
@@ -223,7 +228,7 @@ impl<'a> Events<'a> {
             };
             quote_spanned!(span =>
                 const _: () = {
-                    impl ::ink_env::Topics for #event_ident {
+                    impl<'a> ::ink_env::Topics for #event_ident<'a> {
                         type RemainingTopics = #remaining_topics_ty;
 
                         fn topics<E, B>(
@@ -267,8 +272,8 @@ impl<'a> Events<'a> {
             });
             quote_spanned!(span =>
                 #( #attrs )*
-                #[derive(scale::Encode, scale::Decode)]
-                pub struct #ident {
+                #[derive(scale::Encode)]
+                pub struct #ident<'a> {
                     #( #fields ),*
                 }
             )

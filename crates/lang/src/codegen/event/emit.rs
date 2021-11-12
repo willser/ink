@@ -20,7 +20,7 @@ where
     C: ContractEventBase,
 {
     /// Emits an event that can be trivially converted into the base event.
-    fn emit_event<E>(self, event: E)
+    fn emit_event<E>(self, event: &E)
     where
         E: Into<<C as ContractEventBase>::Type>;
 }

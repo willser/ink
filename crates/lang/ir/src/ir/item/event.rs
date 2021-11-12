@@ -93,12 +93,13 @@ impl TryFrom<syn::ItemStruct> for Event {
                 }
             },
         )?;
-        if !item_struct.generics.params.is_empty() {
-            return Err(format_err_spanned!(
-                item_struct.generics.params,
-                "generic ink! event structs are not supported",
-            ))
-        }
+        // todo: [AJ] restore this check but allow lifetimes
+        // if !item_struct.generics.params.is_empty() {
+        //     return Err(format_err_spanned!(
+        //         item_struct.generics.params,
+        //         "generic ink! event structs are not supported",
+        //     ))
+        // }
         utils::ensure_pub_visibility("event structs", struct_span, &item_struct.vis)?;
         'repeat: for field in item_struct.fields.iter() {
             let field_span = field.span();
