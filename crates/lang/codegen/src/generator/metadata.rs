@@ -322,9 +322,10 @@ impl Metadata<'_> {
             let args = Self::generate_event_args(event);
             quote_spanned!(span =>
                 ::ink_metadata::EventSpec::new(::core::stringify!(#ident))
-                    .args([
-                        #( #args ),*
-                    ])
+                    // todo: handle event arg lifetimes
+                    // .args([
+                    //     #( #args ),*
+                    // ])
                     .docs([
                         #( #docs ),*
                     ])
