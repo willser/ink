@@ -83,7 +83,7 @@ impl EmittedEvent {
     pub fn new<'a, T, E>(emitted_event: E) -> Self
     where
         T: Environment,
-        E: Topics<'a> + scale::Encode,
+        E: Topics + scale::Encode,
     {
         todo!()
         // let topics = emitted_event.topics::<T, _>(TopicsBuilder::default().into());
@@ -116,7 +116,7 @@ impl EmittedEventsRecorder {
     pub fn record<'a, T, E>(&mut self, new_event: E)
     where
         T: Environment,
-        E: Topics<'a> + scale::Encode,
+        E: Topics + scale::Encode,
     {
         todo!()
         // self.emitted_events

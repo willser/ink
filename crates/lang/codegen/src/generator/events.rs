@@ -120,11 +120,11 @@ impl<'a> Events<'a> {
                     const AMOUNT: usize = 0;
                 }
 
-                impl<'a> ::ink_env::Topics<'a> for #base_event_ident<'a> {
+                impl<'a> ::ink_env::Topics for #base_event_ident<'a> {
                     type RemainingTopics = __ink_UndefinedAmountOfTopics;
 
                     fn topics<E, B>(
-                        &'a self,
+                        &self,
                         builder: ::ink_env::topics::TopicsBuilder<::ink_env::topics::state::Uninit, E, B>,
                     ) -> <B as ::ink_env::topics::TopicsBuilderBackend<E>>::Output
                     where
@@ -228,11 +228,11 @@ impl<'a> Events<'a> {
             };
             quote_spanned!(span =>
                 const _: () = {
-                    impl<'a> ::ink_env::Topics<'a> for #event_ident<'a> {
+                    impl<'a> ::ink_env::Topics for #event_ident<'a> {
                         type RemainingTopics = #remaining_topics_ty;
 
                         fn topics<E, B>(
-                            &'a self,
+                            &self,
                             builder: ::ink_env::topics::TopicsBuilder<::ink_env::topics::state::Uninit, E, B>,
                         ) -> <B as ::ink_env::topics::TopicsBuilderBackend<E>>::Output
                         where

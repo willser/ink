@@ -470,7 +470,7 @@ impl TypedEnvBackend for EnvInstance {
     fn emit_event<'a, T, Event>(&mut self, new_event: &'a Event)
     where
         T: Environment,
-        Event: Topics<'a> + scale::Encode,
+        Event: Topics + scale::Encode,
     {
         todo!("possibly need to encode this to record")
         // self.emitted_events.record::<T, Event>(new_event)

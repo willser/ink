@@ -81,11 +81,11 @@ where
     /// Initializes the topics builder and informs it about how many topics it must expect to serialize.
     ///f
     /// The number of expected topics is given implicitly by the `E` type parameter.
-    pub fn build<'a, Event: Topics<'a>>(
+    pub fn build<'a, Event: Topics>(
         mut self,
-    ) -> TopicsBuilder<<Event as Topics<'a>>::RemainingTopics, E, B> {
+    ) -> TopicsBuilder<<Event as Topics>::RemainingTopics, E, B> {
         self.backend
-            .expect(<<Event as Topics<'a>>::RemainingTopics as EventTopicsAmount>::AMOUNT);
+            .expect(<<Event as Topics>::RemainingTopics as EventTopicsAmount>::AMOUNT);
         TopicsBuilder {
             backend: self.backend,
             state: Default::default(),
@@ -188,13 +188,13 @@ impl EventTopicsAmount for state::NoRemainingTopics {
 /// Implemented by event types to guide the event topic serialization using the topics builder.
 ///
 /// Normally this trait should be implemented automatically via the ink! codegen.
-pub trait Topics<'a> {
+pub trait Topics {
     /// Type state indicating how many event topics are to be expected by the topics builder.
     type RemainingTopics: EventTopicsAmount;
 
     /// Guides event topic serialization using the given topics builder.
     fn topics<E, B>(
-        &'a self,
+        &self,
         builder: TopicsBuilder<state::Uninit, E, B>,
     ) -> <B as TopicsBuilderBackend<E>>::Output
     where
