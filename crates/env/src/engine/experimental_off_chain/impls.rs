@@ -402,7 +402,7 @@ impl TypedEnvBackend for EnvInstance {
     fn emit_event<'a, T, Event>(&mut self, event: &'a Event)
     where
         T: Environment,
-        &'a Event: Topics + scale::Encode,
+        Event: Topics<'a> + scale::Encode,
     {
         let builder = TopicsBuilder::default();
         let enc_topics = event.topics::<T, _>(builder.into());

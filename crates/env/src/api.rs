@@ -241,7 +241,7 @@ where
 pub fn emit_event<'a, T, Event>(event: &'a Event)
 where
     T: Environment,
-    &'a Event: Topics + scale::Encode,
+    Event: Topics<'a> + scale::Encode,
 {
     <EnvInstance as OnInstance>::on_instance(|instance| {
         TypedEnvBackend::emit_event::<'a, T, Event>(instance, event)

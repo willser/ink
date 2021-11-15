@@ -389,7 +389,7 @@ pub trait TypedEnvBackend: EnvBackend {
     fn emit_event<'a, T, Event>(&mut self, event: &'a Event)
     where
         T: Environment,
-        &'a Event: Topics + scale::Encode;
+        Event: Topics<'a> + scale::Encode;
 
     /// Sets the rent allowance of the executed contract to the new value.
     ///

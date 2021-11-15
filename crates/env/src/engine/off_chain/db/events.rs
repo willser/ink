@@ -80,16 +80,17 @@ pub struct EmittedEvent {
 
 impl EmittedEvent {
     /// Creates a new emitted event.
-    pub fn new<T, E>(emitted_event: E) -> Self
+    pub fn new<'a, T, E>(emitted_event: E) -> Self
     where
         T: Environment,
-        E: Topics + scale::Encode,
+        E: Topics<'a> + scale::Encode,
     {
-        let topics = emitted_event.topics::<T, _>(TopicsBuilder::default().into());
-        Self {
-            topics,
-            data: emitted_event.encode(),
-        }
+        todo!()
+        // let topics = emitted_event.topics::<T, _>(TopicsBuilder::default().into());
+        // Self {
+        //     topics,
+        //     data: emitted_event.encode(),
+        // }
     }
 }
 
@@ -112,13 +113,14 @@ impl EmittedEventsRecorder {
     }
 
     /// Records a new emitted event.
-    pub fn record<T, E>(&mut self, new_event: E)
+    pub fn record<'a, T, E>(&mut self, new_event: E)
     where
         T: Environment,
-        E: Topics + scale::Encode,
+        E: Topics<'a> + scale::Encode,
     {
-        self.emitted_events
-            .push(EmittedEvent::new::<T, E>(new_event));
+        todo!()
+        // self.emitted_events
+        //     .push(EmittedEvent::new::<T, E>(new_event));
     }
 
     /// Returns an iterator over the emitted events in their emission order.
