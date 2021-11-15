@@ -131,14 +131,13 @@ impl<'a> Events<'a> {
                         E: ::ink_env::Environment,
                         B: ::ink_env::topics::TopicsBuilderBackend<E>,
                     {
-                        todo!()
-                        // match self {
-                        //     #(
-                        //         Self::#event_idents(event) => {
-                        //             <#event_idents as ::ink_env::Topics>::topics::<E, B>(event, builder)
-                        //         }
-                        //     )*
-                        // }
+                        match self {
+                            #(
+                                Self::#event_idents(event) => {
+                                    <#event_idents as ::ink_env::Topics>::topics::<E, B>(event, builder)
+                                }
+                            )*
+                        }
                     }
                 }
             };
