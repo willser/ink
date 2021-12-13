@@ -11,16 +11,24 @@ pub mod flipper {
     };
 
     #[ink(storage)]
-    #[derive(SpreadAllocate, Default)]
+    // #[derive(SpreadAllocate, Default)]
+    #[derive(Default)]
     pub struct Flipper {
         map: Mapping<bool, ()>,
+        map2: Mapping<bool, ()>,
         lazy: Lazy<()>,
     }
 
     impl Flipper {
         #[ink(constructor)]
         pub fn new() -> Self {
-            ink_lang::codegen::initialize_contract(|_contract: &mut Self| {})
+            Self {
+                map: Mapping::from_contract::<Self>(),
+                map2: Mapping::from_contract::<Self>(),
+                lazy: Default::default(),
+            }
+
+            // ink_lang::codegen::initialize_contract(|_contract: &mut Self| {})
         }
 
         #[ink(message)]
@@ -39,7 +47,7 @@ pub mod flipper {
             let flipper = Flipper::new();
             dbg!(&flipper);
             let _ = *flipper.lazy;
-            // panic!()
+            panic!()
         }
     }
 }

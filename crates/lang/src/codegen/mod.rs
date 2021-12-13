@@ -29,7 +29,6 @@ pub use self::{
         initialize_contract,
         initiate_message,
         ContractCallBuilder,
-        ContractRootKey,
         DispatchInput,
         DispatchOutput,
         ExecuteConstructorConfig,

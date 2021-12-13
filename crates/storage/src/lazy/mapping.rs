@@ -52,6 +52,8 @@ impl<K, V> core::fmt::Debug for Mapping<K, V> {
     }
 }
 
+use ink_primitives::ContractRootKey;
+
 impl<K, V> Mapping<K, V> {
     /// Creates a new empty `Mapping`.
     fn new(offset_key: Key) -> Self {
@@ -59,6 +61,14 @@ impl<K, V> Mapping<K, V> {
             offset_key,
             _marker: Default::default(),
         }
+    }
+
+    /// Initialize a mapping for the specified contract.
+    pub fn from_contract<C: ContractRootKey>() -> Self {
+        let mut key_ptr = KeyPtr::from(<C as ContractRootKey>::ROOT_KEY);
+        let offset_key = *ExtKeyPtr::next_for::<Self>(&mut key_ptr);
+        dbg!(&offset_key);
+        Self::new(offset_key)
     }
 }
 

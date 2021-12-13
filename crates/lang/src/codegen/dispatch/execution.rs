@@ -26,6 +26,7 @@ use ink_env::{
     ReturnFlags,
 };
 use ink_primitives::{
+    ContractRootKey,
     Key,
     KeyPtr,
 };
@@ -49,9 +50,9 @@ use ink_storage::{
 /// - This trait is automatically implemented by the ink! codegen.
 /// - The existence of this trait allows to customize the root key in future
 ///   versions of ink! if needed.
-pub trait ContractRootKey {
-    const ROOT_KEY: Key;
-}
+// pub trait ContractRootKey {
+//     const ROOT_KEY: Key;
+// }
 
 /// Returns `Ok` if the caller did not transfer additional value to the callee.
 ///

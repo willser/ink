@@ -23,7 +23,6 @@ pub use self::{
         finalize_message,
         initialize_contract,
         initiate_message,
-        ContractRootKey,
         ExecuteConstructorConfig,
         ExecuteMessageConfig,
     },

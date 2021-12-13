@@ -30,6 +30,9 @@ mod key_ptr;
 mod tests;
 
 pub use self::{
-    key::Key,
+    key::{
+        ContractRootKey,
+        Key,
+    },
     key_ptr::KeyPtr,
 };
