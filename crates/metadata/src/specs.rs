@@ -187,14 +187,6 @@ impl<S> ContractSpecBuilder<S> {
 impl ContractSpecBuilder<Valid> {
     /// Finalizes construction of the contract specification.
     pub fn done(self) -> ContractSpec {
-        assert!(
-            !self.spec.constructors.is_empty(),
-            "must have at least one constructor"
-        );
-        assert!(
-            !self.spec.messages.is_empty(),
-            "must have at least one message"
-        );
         self.spec
     }
 }

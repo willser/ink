@@ -139,7 +139,7 @@ impl ItemMod {
             })
             .any(|mut messages| messages.next().is_some());
         if !found_message {
-            return Err(format_err!(module_span, "missing ink! message"))
+            module_span.unwrap().warning("missing ink! message").emit();
         }
         Ok(())
     }
@@ -161,7 +161,10 @@ impl ItemMod {
             })
             .any(|mut constructors| constructors.next().is_some());
         if !found_constructor {
-            return Err(format_err!(module_span, "missing ink! constructor"))
+            module_span
+                .unwrap()
+                .warning("missing ink! constructor")
+                .emit();
         }
         Ok(())
     }
