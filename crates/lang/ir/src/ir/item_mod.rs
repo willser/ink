@@ -123,11 +123,8 @@ impl ItemMod {
     }
 
     /// Ensures that the given slice of items contains at least one ink! message.
-    fn ensure_contains_message(
-        module_span: Span,
-        items: &[ir::Item],
-    ) -> Result<(), syn::Error> {
-        let found_message = items
+    fn contains_any_message(items: &[ir::Item]) -> bool {
+        items
             .iter()
             .filter_map(|item| {
                 match item {
@@ -137,19 +134,12 @@ impl ItemMod {
                     _ => None,
                 }
             })
-            .any(|mut messages| messages.next().is_some());
-        if !found_message {
-            module_span.unwrap().warning("missing ink! message").emit();
-        }
-        Ok(())
+            .any(|mut messages| messages.next().is_some())
     }
 
     /// Ensures that the given slice of items contains at least one ink! constructor.
-    fn ensure_contains_constructor(
-        module_span: Span,
-        items: &[ir::Item],
-    ) -> Result<(), syn::Error> {
-        let found_constructor = items
+    fn contains_any_constructor(items: &[ir::Item]) -> bool {
+        items
             .iter()
             .filter_map(|item| {
                 match item {
@@ -159,14 +149,7 @@ impl ItemMod {
                     _ => None,
                 }
             })
-            .any(|mut constructors| constructors.next().is_some());
-        if !found_constructor {
-            module_span
-                .unwrap()
-                .warning("missing ink! constructor")
-                .emit();
-        }
-        Ok(())
+            .any(|mut constructors| constructors.next().is_some())
     }
 
     /// Ensures that no ink! message or constructor selectors are overlapping.
@@ -331,8 +314,29 @@ impl TryFrom<syn::ItemMod> for ItemMod {
             .map(<ir::Item as TryFrom<syn::Item>>::try_from)
             .collect::<Result<Vec<_>, syn::Error>>()?;
         Self::ensure_storage_struct_quantity(module_span, &items)?;
-        Self::ensure_contains_message(module_span, &items)?;
-        Self::ensure_contains_constructor(module_span, &items)?;
+
+        let any_constructor = Self::contains_any_constructor(&items);
+        let any_message = Self::contains_any_message(&items);
+
+        match (any_constructor, any_message) {
+            (false, false) => {
+                return Err(format_err!(
+                    module_span,
+                    "must have at least one constructor or message",
+                ))
+            }
+            (true, false) => {
+                module_span.unwrap().warning("missing ink! message").emit();
+            }
+            (false, true) => {
+                module_span
+                    .unwrap()
+                    .warning("missing ink! constructor")
+                    .emit();
+            }
+            (_, _) => {}
+        }
+
         Self::ensure_no_overlapping_selectors(&items)?;
         Self::ensure_only_one_wildcard_selector(&items)?;
         Ok(Self {
